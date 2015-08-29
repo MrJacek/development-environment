@@ -1,0 +1,6 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+192.168.59.103 gitlab.centos7.jh.pl
+192.168.59.103 ci.centos7.jh.pl
+192.168.59.103 gocd.centos7.jh.pl
