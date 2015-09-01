@@ -1,7 +1,17 @@
 sonar-repo:
+{% if 'RedHat' == grains['os_family']  %}
   cmd.run:
     - name: curl -o /etc/yum.repos.d/sonar.repo http://skylink.dl.sourceforge.net/project/sonar-pkg/rpm/sonar.repo
     - creates: /etc/yum.repos.d/sonar.repo
+{% else  %}
+  file.append:
+    - name: /etc/apt/source
+    - text: deb http://downloads.sourceforge.net/project/sonar-pkg/deb binary/
+  cmd.wait:
+    - name: apt-get update
+    - watch:
+      - file: sonar-repo
+{% endif  %}
 
 sonar:
   pkg.installed:

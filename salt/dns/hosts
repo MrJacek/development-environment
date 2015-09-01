@@ -3,4 +3,5 @@
 
 192.168.59.103 gitlab.centos7.jh.pl
 192.168.59.103 ci.centos7.jh.pl
-192.168.59.103 gocd.centos7.jh.pl
+192.168.59.103 nexus.centos7.jh.pl
+192.168.59.103 sonar.centos7.jh.pl
