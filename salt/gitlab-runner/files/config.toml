@@ -1,0 +1,8 @@
+concurrent = 1
+
+[[runners]]
+  name = "centos7"
+  url = "http://ci.centos7.jh.pl"
+  token = "4762c51278d51c84098ff221da6f18"
+  limit = 1
+  executor = "shell"

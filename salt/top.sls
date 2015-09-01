@@ -2,6 +2,7 @@ base:
   'centos7':
      - vim.salt
      - dns
+     - dependency
      - sun-java
      - sun-java.env
      - docker
@@ -13,3 +14,6 @@ base:
      - gocd.nginx
      - nexus
      - nexus.nginx
+     - postgres
+     - postgres.python
+     - sonarqube

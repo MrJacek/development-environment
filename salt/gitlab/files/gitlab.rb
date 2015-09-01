@@ -368,7 +368,7 @@ external_url 'http://gitlab.centos7.jh.pl'
 # nginx['listen_port'] = nil # override only if you use a reverse proxy: https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/nginx.md#setting-the-nginx-listen-port
 # nginx['listen_https'] = nil # override only if your reverse proxy internally communicates over HTTP: https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/doc/settings/nginx.md#supporting-proxied-ssl
 # nginx['custom_gitlab_server_config'] = "location ^~ /foo-namespace/bar-project/raw/ {\n deny all;\n}\n"
-nginx['custom_nginx_config'] = "include /etc/nginx/conf.d/gocd.conf; include /etc/nginx/conf.d/nexus.conf;"
+nginx['custom_nginx_config'] = "include /etc/nginx/conf.d/sonar.conf; include /etc/nginx/conf.d/nexus.conf;"
 
 ## Advanced settings
 # nginx['dir'] = "/var/opt/gitlab/nginx"

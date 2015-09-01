@@ -21,6 +21,3 @@ runner-registered:
     - name: 'gitlab-ci-multi-runner register -n -r f5baa857fb87ccf74266 -u http://ci.centos7.jh.pl'
     - watch:
       - pkg: runner
-    - require:
-      - cmd: 'gitlab is running'
-
