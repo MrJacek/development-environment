@@ -31,6 +31,14 @@ gitlab-repo:
     - watch:
       - cmd: gitlab-repo
 
+nginx-sonar:
+  file.touch:
+    - name: /etc/nginx/conf.d/sonar.conf
+    - makedirs: True
+nginx-nexus:
+  file.touch:
+    - name: /etc/nginx/conf.d/nexus.conf
+    - makedirs: True
 gitlab:
   pkg.installed:
     - name: gitlab-ce
@@ -39,7 +47,9 @@ gitlab:
   file.managed:
     - name: /etc/gitlab/gitlab.rb
     - source: salt://gitlab/files/gitlab.rb
-
+    - template: jinja
+    - context:
+        hostname: {{ pillar['hostname'] }}
 'gitlab is running':
   cmd.wait:
     - name: gitlab-ctl reconfigure & gitlab-ctl restart nginx

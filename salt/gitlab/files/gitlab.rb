@@ -3,7 +3,7 @@
 ## Url on which GitLab will be reachable.
 ## For more details on configuring external_url see:
 ## https://gitlab.com/gitlab-org/omnibus-gitlab/blob/629def0a7a26e7c2326566f0758d4a27857b52a3/README.md#configuring-the-external-url-for-gitlab
-external_url 'http://gitlab.centos7.jh.pl'
+external_url 'http://gitlab.{{hostname}}'
 
 
 ## Note: configuration settings below are optional.
@@ -431,7 +431,7 @@ nginx['custom_nginx_config'] = "include /etc/nginx/conf.d/sonar.conf; include /e
 ############################################
 ## see https://gitlab.com/gitlab-org/omnibus-gitlab/tree/629def0a7a26e7c2326566f0758d4a27857b52a3/doc/gitlab-ci/README.md
 
- ci_external_url 'http://ci.centos7.jh.pl'
+ ci_external_url 'http://ci.{{hostname}}'
 
 
 #################################

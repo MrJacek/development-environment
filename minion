@@ -688,7 +688,6 @@ gitfs_provider: dulwich
 # exist in that repo as *local* refs.
 gitfs_remotes:
   - https://github.com/saltstack-formulas/vim-formula.git
-#  - https://github.com/saltstack-formulas/sun-java-formula.git
   - https://github.com/MrJacek/sun-java-formula.git
   - https://github.com/saltstack-formulas/maven-formula.git
   - https://github.com/MrJacek/nexus-formula.git
