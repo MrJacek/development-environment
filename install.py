@@ -88,7 +88,7 @@ def installGitlab(caller,config):
   config['register_token']=raw_input("Enter gitlab ci token: ")
 
 def installEnvrionment(caller,config):
-  pass
+  print caller.function('state.highstate',pillar=str(config))  
 
 def main():
   if os.geteuid() != 0:
