@@ -16,6 +16,6 @@ Installation
 Login on you server (supprted. CentOS7,CentOS6.6,Ubuntu 14.04,Ubuntu 12.04).
 Invoke this commands:
 
-curl https://github.com/MrJacek/development-environment/releases/download/v1.0.0-rc01/bootstrap.sh
+curl -L https://github.com/MrJacek/development-environment/releases/download/v1.0.0-rc01/bootstrap.sh -o bootstrap.sh
 
  ./bootstrap.sh
