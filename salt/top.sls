@@ -1,5 +1,5 @@
 base:
-  'centos7':
+  '*':
      - vim.salt
      - dns
      - dependency
@@ -8,10 +8,7 @@ base:
      - docker
      - maven
      - maven.env
-     - gitlab
-     - gitlab.runner
-     - gocd
-     - gocd.nginx
+     - gitlab-runner
      - nexus
      - nexus.nginx
      - postgres
