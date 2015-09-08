@@ -32,11 +32,11 @@ gitlab-repo:
       - cmd: gitlab-repo
 
 nginx-sonar:
-  file.touch:
+  file.managed:
     - name: /etc/nginx/conf.d/sonar.conf
     - makedirs: True
 nginx-nexus:
-  file.touch:
+  file.managed:
     - name: /etc/nginx/conf.d/nexus.conf
     - makedirs: True
 gitlab:
@@ -49,7 +49,18 @@ gitlab:
     - source: salt://gitlab/files/gitlab.rb
     - template: jinja
     - context:
-        hostname: {{ pillar['hostname'] }}
+        hostname: {{ pillar['envdev']['hostname'] }}
+  cmd.wait:
+    - name: firewall-cmd --permanent --add-service=http
+    - watch:
+      - pkg: gitlab
+
+'reload firewall':
+  cmd.wait:
+    - name: systemctl reload firewalld
+    - watch:
+      - cmd: gitlab
+
 'gitlab is running':
   cmd.wait:
     - name: gitlab-ctl reconfigure & gitlab-ctl restart nginx

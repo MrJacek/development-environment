@@ -4,6 +4,21 @@ import importlib
 from os.path import expanduser
 import argparse,getpass
 import base64
+import sys
+import copy
+
+def main():
+  if os.geteuid() != 0:
+    exit('You need to have root privileges to run this script.\nPlease try again, this time using "sudo". Exiting.')
+  pwd=os.path.dirname(os.path.realpath(__file__))
+  args=getArguments()
+  installSaltMinion(pwd,args.proxy)
+  caller=prepareSaltClient(args)
+  config=getInstallationConf(caller,args.default)
+  installGitlab(caller,config,args)
+  installEnvrionment(caller,config)
+  print 'Installation was complated. Here are adresses to your development environment:\nGtilab:\t http://gitlab.{0}\nGitlab CI:\t http://ci{0}\nNexus Sonatype:\t http://nexus.{0}\nSonarQube:\t http://sonar.{0}'.format(config['hostname'])
+
 def installSaltMinion(pwd,proxy=None):
   saltCallReturnCode=-1
   try: 
@@ -43,6 +58,11 @@ def getArguments():
                     default=False,
                     type=bool,
                     help='Install extra dependency useful during development.') 
+  parser.add_argument('--default',
+                    action='store_true',
+                    dest='default',
+                    default=False,
+                    help='Install extra dependency useful during development.') 
   return parser.parse_args()
 
  
@@ -64,45 +84,44 @@ def prepareSaltClient(args):
 def installDevEnv(caller):
   print caller.function('state.sls','vim.salt')
 
-def getInstallationConf(caller):
-  config={}
-  config['hostname'] = raw_input("Enter hostname ({})  : ").format(caller.function('grains.item','fqdn'))
-  config['smtp']={}
-  config['smtp']['name']=raw_input("Enter smtp server name: ")
-  config['smtp']['port']=raw_input("Enter smtp server port: ")
-  config['smtp']['sender']=raw_input("Enter smtp server sender: ")
-  config['smtp']['user']=raw_input("Enter smtp user : ")
-  config['smtp']['password']=base64.b64encode(getpass.getpass("Enter smtp password: "))
-  config['ldap']={}
-  config['ldap']['name']=raw_input("Enter ldap server name: ")
-  config['ldap']['port']=raw_input("Enter ldap server port: ")
-  config['ldap']['user']=raw_input("Enter ldap user : ")
-  config['ldap']['password']=base64.b64encode(getpass.getpass("Enter ldap password: "))
-  print config
+def getInstallationConf(caller,default=False):
+  yaml=importlib.import_module('yaml')
+  config=yaml.load(open('/srv/default.yaml'))
+  if default:
+    return config
+  config['envdev']['hostname'] = raw_input("Enter hostname ({})  : ").format(caller.function('grains.item','fqdn'))
+  config['envdev']['smtp']={}
+  config['envdev']['smtp']['name']=raw_input("Enter smtp server name: ")
+  config['envdev']['smtp']['port']=raw_input("Enter smtp server port: ")
+  config['envdev']['smtp']['sender']=raw_input("Enter smtp server sender: ")
+  config['envdev']['smtp']['user']=raw_input("Enter smtp user : ")
+  config['envdev']['smtp']['password']=base64.b64encode(getpass.getpass("Enter smtp password: "))
+  config['envdev']['ldap']={}
+  config['envdev']['ldap']['name']=raw_input("Enter ldap server name: ")
+  config['envdev']['ldap']['port']=raw_input("Enter ldap server port: ")
+  config['envdev']['ldap']['user']=raw_input("Enter ldap user : ")
+  config['envdev']['ldap']['password']=base64.b64encode(getpass.getpass("Enter ldap password: "))
   return config
+  
+def __command(command):
+  pwd=os.path.dirname(os.path.realpath(__file__))
+  print "Found pwd: {}".format(pwd)
+  baseCommand=['salt-call','--retcode-passthrough','--local','--file-root={}/salt'.format(pwd)]
+  baseCommand.extend(command)
+  return baseCommand
 
-def installGitlab(caller,config):
-  print caller.function('state.sls','gitlab',pillar=str(config))
-  print 'Plase try login to gitlab on url: http://gitlab.{}\nLogin: root\nPassword: 5iveL!fe'.format(config['hostname'])
-  print 'After that plase try login to gitlab-ci on url: http://ci.{0}\nAnd go to http://ci.{0}/admin/runners and copy register token'.format(config['hostname'])
+def installGitlab(caller,config,args):
+  subprocess.check_call(__command(['pillar.item','envdev','pillar={}'.format(config)]))
+  subprocess.check_call(__command(['state.sls','gitlab','pillar={}'.format(config)]))
+  if args.default:
+    config['register_token']='default'
+    return None
+  print 'Plase try login to gitlab on url: http://gitlab.{}\nLogin: root\nPassword: 5iveL!fe'.format(config['envdev']['hostname'])
+  print 'After that plase try login to gitlab-ci on url: http://ci.{0}\nAnd go to http://ci.{0}/admin/runners and copy register token'.format(config['envdev']['hostname'])
   config['register_token']=raw_input("Enter gitlab ci token: ")
 
 def installEnvrionment(caller,config):
-  print caller.function('state.highstate',pillar=str(config))  
+  subprocess.check_call(__command(['state.highstate','pillar={}'.format(config)]))
 
-def main():
-  if os.geteuid() != 0:
-    exit('You need to have root privileges to run this script.\nPlease try again, this time using "sudo". Exiting.')
-  pwd=os.path.dirname(os.path.realpath(__file__))
-  args=getArguments()
-  installSaltMinion(pwd,args.proxy)
-  caller=prepareSaltClient(args)
-  if args.dev:
-    print caller.function('test.ping')
-    installDevEnv(caller) 
-  config=getInstallationConf(caller)
-  installGitlab(caller,config)
-  installEnvrionment(caller,config)
-  print 'Installation was complated. Here are adresses to your development environment:\nGtilab:\t http://gitlab.{0}\nGitlab CI:\t http://ci{0}\nNexus Sonatype:\t http://nexus.{0}\nSonarQube:\t http://sonar.{0}'.format(config['hostname'])
 if __name__ == '__main__':
   main()
